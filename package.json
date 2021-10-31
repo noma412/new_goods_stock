@@ -1,0 +1,21 @@
+{
+  "name": "new_snacks_back",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon dist/app.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1",
+    "puppeteer": "^10.4.0"
+  },
+  "devDependencies": {
+    "@types/node": "^16.11.6",
+    "nodemon": "^2.0.14"
+  }
+}
