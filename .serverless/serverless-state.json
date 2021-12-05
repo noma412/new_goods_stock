@@ -174,7 +174,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/new-goods/prod/1638695653524-2021-12-05T09:14:13.524Z/new-goods.zip"
+                "S3Key": "serverless/new-goods/prod/1638696230796-2021-12-05T09:23:50.796Z/new-goods.zip"
               },
               "Handler": "dist/app.handler",
               "Runtime": "nodejs14.x",
@@ -192,14 +192,14 @@
               "StockLogGroup"
             ]
           },
-          "StockLambdaVersion1l9EZRzxiSFQMrTGXJTPtEqW6qQIxDqflm09Fv98djo": {
+          "StockLambdaVersionGX4kMFR5mqSaYWb8Vb1Fvw5YR8ryFFHMcLfZJSaA": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "StockLambdaFunction"
               },
-              "CodeSha256": "XsBN479UIdM+RTPHhslY6UCSOCVG8nJzJf4oFGGETlc="
+              "CodeSha256": "iF4Dhu8NaUbnJgGLeSRW6iUrvXmvV6AiOH1xH2hITCU="
             }
           }
         },
@@ -215,7 +215,7 @@
           "StockLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "StockLambdaVersion1l9EZRzxiSFQMrTGXJTPtEqW6qQIxDqflm09Fv98djo"
+              "Ref": "StockLambdaVersionGX4kMFR5mqSaYWb8Vb1Fvw5YR8ryFFHMcLfZJSaA"
             },
             "Export": {
               "Name": "sls-new-goods-prod-StockLambdaFunctionQualifiedArn"
@@ -318,7 +318,7 @@
         "timeout": 6,
         "runtime": "nodejs14.x",
         "vpc": {},
-        "versionLogicalId": "StockLambdaVersion1l9EZRzxiSFQMrTGXJTPtEqW6qQIxDqflm09Fv98djo"
+        "versionLogicalId": "StockLambdaVersionGX4kMFR5mqSaYWb8Vb1Fvw5YR8ryFFHMcLfZJSaA"
       }
     },
     "configValidationMode": "warn",
@@ -334,7 +334,7 @@
       "package": {
         "exclude": [
           ".vscode/**",
-          ".src/**",
+          "src/**",
           ".gitignore",
           ".npmignore",
           ".npmrc",
@@ -345,7 +345,7 @@
           "README.md"
         ],
         "artifact": "C:\\Users\\MaNo\\Desktop\\new_snacks_stock\\.serverless\\new-goods.zip",
-        "artifactDirectoryName": "serverless/new-goods/prod/1638695653524-2021-12-05T09:14:13.524Z"
+        "artifactDirectoryName": "serverless/new-goods/prod/1638696230796-2021-12-05T09:23:50.796Z"
       },
       "functions": {
         "$ref": "$[\"service\"][\"functions\"]"
@@ -356,7 +356,7 @@
     "artifact": "C:\\Users\\MaNo\\Desktop\\new_snacks_stock\\.serverless\\new-goods.zip"
   },
   "package": {
-    "artifactDirectoryName": "serverless/new-goods/prod/1638695653524-2021-12-05T09:14:13.524Z",
+    "artifactDirectoryName": "serverless/new-goods/prod/1638696230796-2021-12-05T09:23:50.796Z",
     "artifact": "new-goods.zip"
   }
 }
