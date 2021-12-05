@@ -1,8 +1,8 @@
 {
   "service": {
-    "service": "new-goods",
+    "service": "new-goods-stock",
     "serviceObject": {
-      "name": "new-goods"
+      "name": "new-goods-stock"
     },
     "provider": {
       "name": "aws",
@@ -84,10 +84,10 @@
               }
             }
           },
-          "StockLogGroup": {
+          "FuncLogGroup": {
             "Type": "AWS::Logs::LogGroup",
             "Properties": {
-              "LogGroupName": "/aws/lambda/new-goods-prod-stock"
+              "LogGroupName": "/aws/lambda/new-goods-stock-prod-func"
             }
           },
           "IamRoleLambdaExecution": {
@@ -115,7 +115,7 @@
                     "Fn::Join": [
                       "-",
                       [
-                        "new-goods",
+                        "new-goods-stock",
                         "prod",
                         "lambda"
                       ]
@@ -132,7 +132,7 @@
                         ],
                         "Resource": [
                           {
-                            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/new-goods-prod*:*"
+                            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/new-goods-stock-prod*:*"
                           }
                         ]
                       },
@@ -143,7 +143,7 @@
                         ],
                         "Resource": [
                           {
-                            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/new-goods-prod*:*:*"
+                            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/new-goods-stock-prod*:*:*"
                           }
                         ]
                       }
@@ -156,7 +156,7 @@
                 "Fn::Join": [
                   "-",
                   [
-                    "new-goods",
+                    "new-goods-stock",
                     "prod",
                     {
                       "Ref": "AWS::Region"
@@ -167,18 +167,18 @@
               }
             }
           },
-          "StockLambdaFunction": {
+          "FuncLambdaFunction": {
             "Type": "AWS::Lambda::Function",
             "Properties": {
               "Code": {
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/new-goods/prod/1638696230796-2021-12-05T09:23:50.796Z/new-goods.zip"
+                "S3Key": "serverless/new-goods-stock/prod/1638697506715-2021-12-05T09:45:06.715Z/new-goods-stock.zip"
               },
               "Handler": "dist/app.handler",
               "Runtime": "nodejs14.x",
-              "FunctionName": "new-goods-prod-stock",
+              "FunctionName": "new-goods-stock-prod-func",
               "MemorySize": 1024,
               "Timeout": 6,
               "Role": {
@@ -189,17 +189,17 @@
               }
             },
             "DependsOn": [
-              "StockLogGroup"
+              "FuncLogGroup"
             ]
           },
-          "StockLambdaVersionGX4kMFR5mqSaYWb8Vb1Fvw5YR8ryFFHMcLfZJSaA": {
+          "FuncLambdaVersionEU5hF2ySiIWqp4MBVO1aeGZZuNS5exwd4Q5qJV6EO4": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
-                "Ref": "StockLambdaFunction"
+                "Ref": "FuncLambdaFunction"
               },
-              "CodeSha256": "iF4Dhu8NaUbnJgGLeSRW6iUrvXmvV6AiOH1xH2hITCU="
+              "CodeSha256": "litSPD0FNd+IO8aZQLuRHm3KKY3zzUg/k2lLKNuyMpM="
             }
           }
         },
@@ -209,16 +209,16 @@
               "Ref": "ServerlessDeploymentBucket"
             },
             "Export": {
-              "Name": "sls-new-goods-prod-ServerlessDeploymentBucketName"
+              "Name": "sls-new-goods-stock-prod-ServerlessDeploymentBucketName"
             }
           },
-          "StockLambdaFunctionQualifiedArn": {
+          "FuncLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "StockLambdaVersionGX4kMFR5mqSaYWb8Vb1Fvw5YR8ryFFHMcLfZJSaA"
+              "Ref": "FuncLambdaVersionEU5hF2ySiIWqp4MBVO1aeGZZuNS5exwd4Q5qJV6EO4"
             },
             "Export": {
-              "Name": "sls-new-goods-prod-StockLambdaFunctionQualifiedArn"
+              "Name": "sls-new-goods-stock-prod-FuncLambdaFunctionQualifiedArn"
             }
           }
         }
@@ -309,16 +309,16 @@
     },
     "pluginsData": {},
     "functions": {
-      "stock": {
+      "func": {
         "handler": "dist/app.handler",
         "events": [],
-        "name": "new-goods-prod-stock",
+        "name": "new-goods-stock-prod-func",
         "package": {},
         "memory": 1024,
         "timeout": 6,
         "runtime": "nodejs14.x",
         "vpc": {},
-        "versionLogicalId": "StockLambdaVersionGX4kMFR5mqSaYWb8Vb1Fvw5YR8ryFFHMcLfZJSaA"
+        "versionLogicalId": "FuncLambdaVersionEU5hF2ySiIWqp4MBVO1aeGZZuNS5exwd4Q5qJV6EO4"
       }
     },
     "configValidationMode": "warn",
@@ -344,8 +344,8 @@
           "tsconfig.json",
           "README.md"
         ],
-        "artifact": "C:\\Users\\MaNo\\Desktop\\new_snacks_stock\\.serverless\\new-goods.zip",
-        "artifactDirectoryName": "serverless/new-goods/prod/1638696230796-2021-12-05T09:23:50.796Z"
+        "artifact": "C:\\Users\\MaNo\\Desktop\\new_snacks_stock\\.serverless\\new-goods-stock.zip",
+        "artifactDirectoryName": "serverless/new-goods-stock/prod/1638697506715-2021-12-05T09:45:06.715Z"
       },
       "functions": {
         "$ref": "$[\"service\"][\"functions\"]"
@@ -353,10 +353,10 @@
     },
     "layers": {},
     "isDashboardMonitoringPreconfigured": false,
-    "artifact": "C:\\Users\\MaNo\\Desktop\\new_snacks_stock\\.serverless\\new-goods.zip"
+    "artifact": "C:\\Users\\MaNo\\Desktop\\new_snacks_stock\\.serverless\\new-goods-stock.zip"
   },
   "package": {
-    "artifactDirectoryName": "serverless/new-goods/prod/1638696230796-2021-12-05T09:23:50.796Z",
-    "artifact": "new-goods.zip"
+    "artifactDirectoryName": "serverless/new-goods-stock/prod/1638697506715-2021-12-05T09:45:06.715Z",
+    "artifact": "new-goods-stock.zip"
   }
 }

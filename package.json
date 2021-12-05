@@ -1,15 +1,14 @@
 {
-  "name": "new_snacks_back",
+  "name": "new_goods_stock",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "correct info of new goods about convenience store",
+  "main": "dist/app.js",
   "scripts": {
     "start:local": "cross-env NODE_ENV=local nodemon dist/local.js",
     "start:prod": "cross-env NODE_ENV=prod nodemon dist/local.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "express": "^4.17.1",
     "mysql": "^2.18.1",
     "puppeteer": "^10.4.0"
   },
