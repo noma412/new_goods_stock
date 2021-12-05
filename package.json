@@ -4,20 +4,19 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon dist/app.js"
+    "start:local": "cross-env NODE_ENV=local nodemon dist/local.js",
+    "start:prod": "cross-env NODE_ENV=prod nodemon dist/local.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "dependencies": {
-    "@types/mysql": "^2.15.19",
     "express": "^4.17.1",
     "mysql": "^2.18.1",
     "puppeteer": "^10.4.0"
   },
   "devDependencies": {
+    "@types/mysql": "^2.15.19",
     "@types/node": "^16.11.6",
+    "cross-env": "^7.0.3",
     "nodemon": "^2.0.14"
   }
 }
