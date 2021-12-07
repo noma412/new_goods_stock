@@ -1,4 +1,5 @@
-import puppeteer from 'puppeteer'
+import chromium from 'chrome-aws-lambda'
+import puppeteer = chromium.puppeteer
 import mysql from 'mysql'
 
 const convenience_store_info = [
@@ -23,8 +24,13 @@ type list = {
   caution?: string | null
 }
 
-const stock = async () => {
-  const browser = await puppeteer.launch()
+module.exports.handler = async (event: any, context: any) => {
+  const browser = await puppeteer.launch({
+    args: chromium.args,
+    defaultViewport: chromium.defaultViewport,
+    executablePath: await chromium.executablePath,
+    headless: chromium.headless,
+  })
   const promiseList: any[] = []
   convenience_store_info.forEach((information) => {
     promiseList.push(
@@ -33,46 +39,49 @@ const stock = async () => {
         const res = await page.goto(information.url)
         if (res.status() !== 200) return `${res.status()} ERROR`
         if (information.name === 'LAWSON') await page.waitForNavigation()
-        const lists = await page.$$eval(information.target, (datas) => {
-          const lists: list[] = []
-          datas.forEach((data) => {
-            let list: list
-            if (document.title.match(/ローソン/)) {
-              list = {
-                href: data.querySelector('a')?.href as string,
-                img: data.querySelector('img')?.src as string,
-                title: data.querySelector('.ttl')?.textContent as string,
-                kcal: data.querySelector('.ttl')?.nextElementSibling
-                  ?.textContent as string,
-                price: data.querySelector('.price')?.textContent as string,
-                release_date: (
-                  data.querySelector('.date > span')?.textContent as string
-                ).replace(/\./g, '-'),
-                caution:
-                  (data.querySelector('.smalltxt')?.textContent as string) ||
-                  null,
+        const lists: list[] = await page.$$eval(
+          information.target,
+          (datas: any[]) => {
+            const listBox: list[] = []
+            datas.forEach((data) => {
+              let list: list
+              if (document.title.match(/ローソン/)) {
+                list = {
+                  href: data.querySelector('a')?.href as string,
+                  img: data.querySelector('img')?.src as string,
+                  title: data.querySelector('.ttl')?.textContent as string,
+                  kcal: data.querySelector('.ttl')?.nextElementSibling
+                    ?.textContent as string,
+                  price: data.querySelector('.price')?.textContent as string,
+                  release_date: (
+                    data.querySelector('.date > span')?.textContent as string
+                  ).replace(/\./g, '-'),
+                  caution:
+                    (data.querySelector('.smalltxt')?.textContent as string) ||
+                    null,
+                }
+                listBox.push(list)
+              } else if (document.title.match(/ファミリーマート/)) {
+                list = {
+                  href: data.querySelector('a')?.href as string,
+                  img: data.querySelector('img')?.src as string,
+                  title: (
+                    data.querySelector('.ly-mod-infoset4-ttl')
+                      ?.textContent as string
+                  ).trim(),
+                  price: (
+                    data.querySelector('.ly-mod-infoset4-txt')
+                      ?.textContent as string
+                  )
+                    .replace(/\n/g, '')
+                    .replace(/\t/g, ''),
+                }
+                listBox.push(list)
               }
-              lists.push(list)
-            } else if (document.title.match(/ファミリーマート/)) {
-              list = {
-                href: data.querySelector('a')?.href as string,
-                img: data.querySelector('img')?.src as string,
-                title: (
-                  data.querySelector('.ly-mod-infoset4-ttl')
-                    ?.textContent as string
-                ).trim(),
-                price: (
-                  data.querySelector('.ly-mod-infoset4-txt')
-                    ?.textContent as string
-                )
-                  .replace(/\n/g, '')
-                  .replace(/\t/g, ''),
-              }
-              lists.push(list)
-            }
-          })
-          return lists
-        })
+            })
+            return listBox
+          }
+        )
         await page.close()
         return lists
       })().catch((e) => console.error(e))
@@ -125,8 +134,6 @@ const stock = async () => {
 
     browser.close()
     connection.end()
+    return context.succeed()
   })
 }
-
-module.exports.handler = stock
-export default stock

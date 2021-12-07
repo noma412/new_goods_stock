@@ -3,7 +3,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const puppeteer_1 = __importDefault(require("puppeteer"));
+const chrome_aws_lambda_1 = __importDefault(require("chrome-aws-lambda"));
+var puppeteer = chrome_aws_lambda_1.default.puppeteer;
 const mysql_1 = __importDefault(require("mysql"));
 const convenience_store_info = [
     {
@@ -17,8 +18,13 @@ const convenience_store_info = [
         target: '.ly-mod-layout-4clm > .ly-mod-layout-clm',
     },
 ];
-const stock = async () => {
-    const browser = await puppeteer_1.default.launch();
+module.exports.handler = async (event, context) => {
+    const browser = await puppeteer.launch({
+        args: chrome_aws_lambda_1.default.args,
+        defaultViewport: chrome_aws_lambda_1.default.defaultViewport,
+        executablePath: await chrome_aws_lambda_1.default.executablePath,
+        headless: chrome_aws_lambda_1.default.headless,
+    });
     const promiseList = [];
     convenience_store_info.forEach((information) => {
         promiseList.push((async () => {
@@ -29,7 +35,7 @@ const stock = async () => {
             if (information.name === 'LAWSON')
                 await page.waitForNavigation();
             const lists = await page.$$eval(information.target, (datas) => {
-                const lists = [];
+                const listBox = [];
                 datas.forEach((data) => {
                     let list;
                     if (document.title.match(/ローソン/)) {
@@ -44,7 +50,7 @@ const stock = async () => {
                             caution: data.querySelector('.smalltxt')?.textContent ||
                                 null,
                         };
-                        lists.push(list);
+                        listBox.push(list);
                     }
                     else if (document.title.match(/ファミリーマート/)) {
                         list = {
@@ -57,10 +63,10 @@ const stock = async () => {
                                 .replace(/\n/g, '')
                                 .replace(/\t/g, ''),
                         };
-                        lists.push(list);
+                        listBox.push(list);
                     }
                 });
-                return lists;
+                return listBox;
             });
             await page.close();
             return lists;
@@ -108,7 +114,6 @@ const stock = async () => {
         });
         browser.close();
         connection.end();
+        return context.succeed();
     });
 };
-module.exports.handler = stock;
-exports.default = stock;
