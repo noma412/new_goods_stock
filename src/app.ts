@@ -84,7 +84,7 @@ const stock = async () => {
     const connection = mysql.createConnection({
       host: localFlg
         ? 'localhost'
-        : 'new-goods-instance.c4gr8yy5e4ab.us-east-2.rds.amazonaws.com',
+        : 'new-goods-instance.czcshofywjfu.ap-northeast-1.rds.amazonaws.com',
       user: localFlg ? 'root' : 'noma',
       password: 'Toeic900',
       database: 'convenience_store_info',
