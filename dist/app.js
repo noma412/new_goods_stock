@@ -4,7 +4,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const chrome_aws_lambda_1 = __importDefault(require("chrome-aws-lambda"));
-var puppeteer = chrome_aws_lambda_1.default.puppeteer;
 const mysql_1 = __importDefault(require("mysql"));
 const convenience_store_info = [
     {
@@ -19,7 +18,7 @@ const convenience_store_info = [
     },
 ];
 module.exports.handler = async (event, context) => {
-    const browser = await puppeteer.launch({
+    const browser = await chrome_aws_lambda_1.default.puppeteer.launch({
         args: chrome_aws_lambda_1.default.args,
         defaultViewport: chrome_aws_lambda_1.default.defaultViewport,
         executablePath: await chrome_aws_lambda_1.default.executablePath,

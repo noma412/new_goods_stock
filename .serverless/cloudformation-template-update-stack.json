@@ -161,7 +161,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/new-goods-stock/prod/1638879793123-2021-12-07T12:23:13.123Z/new-goods-stock.zip"
+          "S3Key": "serverless/new-goods-stock/prod/1638974721756-2021-12-08T14:45:21.756Z/new-goods-stock.zip"
         },
         "Handler": "dist/app.handler",
         "Runtime": "nodejs14.x",
@@ -179,14 +179,14 @@
         "FuncLogGroup"
       ]
     },
-    "FuncLambdaVersionXPGX3iHwwShHkw0G9pgA5jaHTnGBrU1NkPbJfz1ofM": {
+    "FuncLambdaVersion3gNSRyAy4pONWA3i6J2TBjmxDmMJ54ncO6zOhyBNjo": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "FuncLambdaFunction"
         },
-        "CodeSha256": "TDz3RSQYmKaeXeKfku/pvfESYIgWQFwNcs43eTzV/eg="
+        "CodeSha256": "5IcJS8YC8ojzlBk6wpU/vrbeO+IyvlsO+FswaXZ22Gk="
       }
     }
   },
@@ -202,7 +202,7 @@
     "FuncLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "FuncLambdaVersionXPGX3iHwwShHkw0G9pgA5jaHTnGBrU1NkPbJfz1ofM"
+        "Ref": "FuncLambdaVersion3gNSRyAy4pONWA3i6J2TBjmxDmMJ54ncO6zOhyBNjo"
       },
       "Export": {
         "Name": "sls-new-goods-stock-prod-FuncLambdaFunctionQualifiedArn"

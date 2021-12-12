@@ -1,5 +1,4 @@
 import chromium from 'chrome-aws-lambda'
-import puppeteer = chromium.puppeteer
 import mysql from 'mysql'
 
 const convenience_store_info = [
@@ -25,7 +24,7 @@ type list = {
 }
 
 module.exports.handler = async (event: any, context: any) => {
-  const browser = await puppeteer.launch({
+  const browser = await chromium.puppeteer.launch({
     args: chromium.args,
     defaultViewport: chromium.defaultViewport,
     executablePath: await chromium.executablePath,
