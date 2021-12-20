@@ -97,22 +97,22 @@ module.exports.handler = async (event, context) => {
             valueBox.forEach((value) => {
                 if (value.href.match(/lawson/)) {
                     connection.query(`INSERT INTO new_goods (date, name, href, img, title, price, kcal, release_date, caution) VALUES
-            ('${date}','LAWSON', '${value.href}', '${value.img}', '${value.title}', '${value.price}', '${value.kcal}', '${value.release_date}', '${value.caution}')`, (error, results) => {
-                        if (error)
-                            throw error;
+            ('${date}','LAWSON', '${value.href}', '${value.img}', '${value.title}', '${value.price}', '${value.kcal}', '${value.release_date}', '${value.caution}')`, (err) => {
+                        if (err)
+                            console.log('error connecting:' + err.stack);
                     });
                 }
                 else if (value.href.match(/family/)) {
                     connection.query(`INSERT INTO new_goods (date, name, href, img, title, price) VALUES
-            ('${date}','FamilyMart', '${value.href}', '${value.img}', '${value.title}', '${value.price}')`, (error, results) => {
-                        if (error)
-                            throw error;
+            ('${date}','FamilyMart', '${value.href}', '${value.img}', '${value.title}', '${value.price}')`, (err) => {
+                        if (err)
+                            console.log('error connecting:' + err.stack);
                     });
                 }
             });
         });
         browser.close();
         connection.end();
-        return context.succeed();
+        context.succeed();
     });
 };

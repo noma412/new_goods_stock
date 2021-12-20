@@ -115,16 +115,16 @@ module.exports.handler = async (event: any, context: any) => {
           connection.query(
             `INSERT INTO new_goods (date, name, href, img, title, price, kcal, release_date, caution) VALUES
             ('${date}','LAWSON', '${value.href}', '${value.img}', '${value.title}', '${value.price}', '${value.kcal}', '${value.release_date}', '${value.caution}')`,
-            (error, results) => {
-              if (error) throw error
+            (err) => {
+              if (err) console.log('error connecting:' + err.stack)
             }
           )
         } else if (value.href.match(/family/)) {
           connection.query(
             `INSERT INTO new_goods (date, name, href, img, title, price) VALUES
             ('${date}','FamilyMart', '${value.href}', '${value.img}', '${value.title}', '${value.price}')`,
-            (error, results) => {
-              if (error) throw error
+            (err) => {
+              if (err) console.log('error connecting:' + err.stack)
             }
           )
         }
@@ -133,6 +133,6 @@ module.exports.handler = async (event: any, context: any) => {
 
     browser.close()
     connection.end()
-    return context.succeed()
+    context.succeed()
   })
 }
