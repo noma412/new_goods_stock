@@ -40,13 +40,15 @@ const stock = async () => {
         const page = await browser.newPage()
         const res = await page.goto(information.url)
         if (res.status() !== 200) return `${res.status()} ERROR`
-        await page.evaluate(() => {
-          ;(document.scrollingElement as HTMLElement).scrollTo({
-            top: document.body.scrollHeight,
-            behavior: 'smooth',
+        if (information.name === 'SEVEN-ELEVEN') {
+          await page.evaluate(() => {
+            ;(document.scrollingElement as HTMLElement).scrollTo({
+              top: document.body.scrollHeight,
+              behavior: 'smooth',
+            })
           })
-        })
-        await page.waitFor(5000)
+          await page.waitFor(5000)
+        }
         if (information.name === 'LAWSON') await page.waitForNavigation()
         const lists = await page.$$eval(information.target, (datas) => {
           const lists: list[] = []
