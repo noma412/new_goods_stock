@@ -6,19 +6,27 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const puppeteer_1 = __importDefault(require("puppeteer"));
 const mysql_1 = __importDefault(require("mysql"));
 const convenience_store_info = [
+    // {
+    //   name: 'LAWSON',
+    //   url: 'https://www.lawson.co.jp/recommend/new/',
+    //   target: '.heightLineParent > li',
+    // },
+    // {
+    //   name: 'FamilyMart',
+    //   url: 'https://www.family.co.jp/goods/newgoods.html',
+    //   target: '.ly-mod-layout-4clm > .ly-mod-layout-clm',
+    // },
     {
-        name: 'LAWSON',
-        url: 'https://www.lawson.co.jp/recommend/new/',
-        target: '.heightLineParent > li',
-    },
-    {
-        name: 'FamilyMart',
-        url: 'https://www.family.co.jp/goods/newgoods.html',
-        target: '.ly-mod-layout-4clm > .ly-mod-layout-clm',
+        name: 'SEVEN-ELEVEN',
+        url: 'https://www.sej.co.jp/products/a/thisweek/area/kanto/1/l100/',
+        target: '.flex_wrap > .list_inner',
     },
 ];
 const stock = async () => {
-    const browser = await puppeteer_1.default.launch();
+    const browser = await puppeteer_1.default.launch({
+        headless: false,
+        slowMo: 300,
+    });
     const promiseList = [];
     convenience_store_info.forEach((information) => {
         promiseList.push((async () => {
@@ -26,6 +34,14 @@ const stock = async () => {
             const res = await page.goto(information.url);
             if (res.status() !== 200)
                 return `${res.status()} ERROR`;
+            await page.evaluate(() => {
+                ;
+                document.scrollingElement.scrollTo({
+                    top: document.body.scrollHeight,
+                    behavior: 'smooth',
+                });
+            });
+            await page.waitFor(5000);
             if (information.name === 'LAWSON')
                 await page.waitForNavigation();
             const lists = await page.$$eval(information.target, (datas) => {
@@ -57,6 +73,25 @@ const stock = async () => {
                                 .replace(/\n/g, '')
                                 .replace(/\t/g, ''),
                         };
+                        lists.push(list);
+                    }
+                    else if (document.title.match(/セブン‐イレブン/)) {
+                        let releaseDate = data.querySelector('.item_launch > p')
+                            ?.textContent;
+                        releaseDate = releaseDate.substring(0, releaseDate.indexOf('（'));
+                        (releaseDate = releaseDate
+                            .replace(/年/g, '-')
+                            .replace(/月/g, '-')
+                            .replace(/日/g, '-')),
+                            (list = {
+                                href: data.querySelector('a')?.href,
+                                img: data.querySelector('img')?.src,
+                                title: data.querySelector('.item_ttl a')?.textContent.trim(),
+                                price: data.querySelector('.item_price p')?.textContent
+                                    .replace(/\n/g, '')
+                                    .replace(/\t/g, ''),
+                                release_date: releaseDate,
+                            });
                         lists.push(list);
                     }
                 });
@@ -100,6 +135,13 @@ const stock = async () => {
                 else if (value.href.match(/family/)) {
                     connection.query(`INSERT INTO new_goods (date, name, href, img, title, price) VALUES
             ('${date}','FamilyMart', '${value.href}', '${value.img}', '${value.title}', '${value.price}')`, (error, results) => {
+                        if (error)
+                            throw error;
+                    });
+                }
+                else if (value.href.match(/sej/)) {
+                    connection.query(`INSERT INTO new_goods (date, name, href, img, title, price, release_date) VALUES
+            ('${date}','SEVEN-ELEVEN', '${value.href}', '${value.img}', '${value.title}', '${value.price}', '${value.release_date}')`, (error, results) => {
                         if (error)
                             throw error;
                     });

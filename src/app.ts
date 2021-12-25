@@ -2,15 +2,20 @@ import puppeteer from 'puppeteer'
 import mysql from 'mysql'
 
 const convenience_store_info = [
+  // {
+  //   name: 'LAWSON',
+  //   url: 'https://www.lawson.co.jp/recommend/new/',
+  //   target: '.heightLineParent > li',
+  // },
+  // {
+  //   name: 'FamilyMart',
+  //   url: 'https://www.family.co.jp/goods/newgoods.html',
+  //   target: '.ly-mod-layout-4clm > .ly-mod-layout-clm',
+  // },
   {
-    name: 'LAWSON',
-    url: 'https://www.lawson.co.jp/recommend/new/',
-    target: '.heightLineParent > li',
-  },
-  {
-    name: 'FamilyMart',
-    url: 'https://www.family.co.jp/goods/newgoods.html',
-    target: '.ly-mod-layout-4clm > .ly-mod-layout-clm',
+    name: 'SEVEN-ELEVEN',
+    url: 'https://www.sej.co.jp/products/a/thisweek/area/kanto/1/l100/',
+    target: '.flex_wrap > .list_inner',
   },
 ]
 type list = {
@@ -24,7 +29,10 @@ type list = {
 }
 
 const stock = async () => {
-  const browser = await puppeteer.launch()
+  const browser = await puppeteer.launch({
+    headless: false,
+    slowMo: 300,
+  })
   const promiseList: any[] = []
   convenience_store_info.forEach((information) => {
     promiseList.push(
@@ -32,6 +40,13 @@ const stock = async () => {
         const page = await browser.newPage()
         const res = await page.goto(information.url)
         if (res.status() !== 200) return `${res.status()} ERROR`
+        await page.evaluate(() => {
+          ;(document.scrollingElement as HTMLElement).scrollTo({
+            top: document.body.scrollHeight,
+            behavior: 'smooth',
+          })
+        })
+        await page.waitFor(5000)
         if (information.name === 'LAWSON') await page.waitForNavigation()
         const lists = await page.$$eval(information.target, (datas) => {
           const lists: list[] = []
@@ -68,6 +83,28 @@ const stock = async () => {
                   .replace(/\n/g, '')
                   .replace(/\t/g, ''),
               }
+              lists.push(list)
+            } else if (document.title.match(/セブン‐イレブン/)) {
+              let releaseDate = data.querySelector('.item_launch > p')
+                ?.textContent as string
+              releaseDate = releaseDate.substring(0, releaseDate.indexOf('（'))
+              ;(releaseDate = releaseDate
+                .replace(/年/g, '-')
+                .replace(/月/g, '-')
+                .replace(/日/g, '-')),
+                (list = {
+                  href: data.querySelector('a')?.href as string,
+                  img: data.querySelector('img')?.src as string,
+                  title: (
+                    data.querySelector('.item_ttl a')?.textContent as string
+                  ).trim(),
+                  price: (
+                    data.querySelector('.item_price p')?.textContent as string
+                  )
+                    .replace(/\n/g, '')
+                    .replace(/\t/g, ''),
+                  release_date: releaseDate,
+                })
               lists.push(list)
             }
           })
@@ -115,6 +152,14 @@ const stock = async () => {
           connection.query(
             `INSERT INTO new_goods (date, name, href, img, title, price) VALUES
             ('${date}','FamilyMart', '${value.href}', '${value.img}', '${value.title}', '${value.price}')`,
+            (error, results) => {
+              if (error) throw error
+            }
+          )
+        } else if (value.href.match(/sej/)) {
+          connection.query(
+            `INSERT INTO new_goods (date, name, href, img, title, price, release_date) VALUES
+            ('${date}','SEVEN-ELEVEN', '${value.href}', '${value.img}', '${value.title}', '${value.price}', '${value.release_date}')`,
             (error, results) => {
               if (error) throw error
             }
