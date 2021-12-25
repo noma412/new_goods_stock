@@ -2,16 +2,16 @@ import puppeteer from 'puppeteer'
 import mysql from 'mysql'
 
 const convenience_store_info = [
-  // {
-  //   name: 'LAWSON',
-  //   url: 'https://www.lawson.co.jp/recommend/new/',
-  //   target: '.heightLineParent > li',
-  // },
-  // {
-  //   name: 'FamilyMart',
-  //   url: 'https://www.family.co.jp/goods/newgoods.html',
-  //   target: '.ly-mod-layout-4clm > .ly-mod-layout-clm',
-  // },
+  {
+    name: 'LAWSON',
+    url: 'https://www.lawson.co.jp/recommend/new/',
+    target: '.heightLineParent > li',
+  },
+  {
+    name: 'FamilyMart',
+    url: 'https://www.family.co.jp/goods/newgoods.html',
+    target: '.ly-mod-layout-4clm > .ly-mod-layout-clm',
+  },
   {
     name: 'SEVEN-ELEVEN',
     url: 'https://www.sej.co.jp/products/a/thisweek/area/kanto/1/l100/',
