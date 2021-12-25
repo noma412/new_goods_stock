@@ -3,6 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+//@ts-ignore
 const chrome_aws_lambda_1 = __importDefault(require("chrome-aws-lambda"));
 const mysql_1 = __importDefault(require("mysql"));
 const convenience_store_info = [
@@ -15,6 +16,11 @@ const convenience_store_info = [
         name: 'FamilyMart',
         url: 'https://www.family.co.jp/goods/newgoods.html',
         target: '.ly-mod-layout-4clm > .ly-mod-layout-clm',
+    },
+    {
+        name: 'SEVEN-ELEVEN',
+        url: 'https://www.sej.co.jp/products/a/thisweek/area/kanto/1/l100/',
+        target: '.flex_wrap > .list_inner',
     },
 ];
 module.exports.handler = async (event, context) => {
@@ -31,6 +37,16 @@ module.exports.handler = async (event, context) => {
             const res = await page.goto(information.url);
             if (res.status() !== 200)
                 return `${res.status()} ERROR`;
+            if (information.name === 'SEVEN-ELEVEN') {
+                await page.evaluate(() => {
+                    ;
+                    document.scrollingElement.scrollTo({
+                        top: document.body.scrollHeight,
+                        behavior: 'smooth',
+                    });
+                });
+                await page.waitFor(5000);
+            }
             if (information.name === 'LAWSON')
                 await page.waitForNavigation();
             const lists = await page.$$eval(information.target, (datas) => {
@@ -63,6 +79,25 @@ module.exports.handler = async (event, context) => {
                                 .replace(/\t/g, ''),
                         };
                         listBox.push(list);
+                    }
+                    else if (document.title.match(/セブン‐イレブン/)) {
+                        let releaseDate = data.querySelector('.item_launch > p')
+                            ?.textContent;
+                        releaseDate = releaseDate.substring(0, releaseDate.indexOf('（'));
+                        (releaseDate = releaseDate
+                            .replace(/年/g, '-')
+                            .replace(/月/g, '-')
+                            .replace(/日/g, '-')),
+                            (list = {
+                                href: data.querySelector('a')?.href,
+                                img: data.querySelector('img')?.src,
+                                title: data.querySelector('.item_ttl a')?.textContent.trim(),
+                                price: data.querySelector('.item_price p')?.textContent
+                                    .replace(/\n/g, '')
+                                    .replace(/\t/g, ''),
+                                release_date: releaseDate,
+                            });
+                        lists.push(list);
                     }
                 });
                 return listBox;
@@ -105,6 +140,13 @@ module.exports.handler = async (event, context) => {
                 else if (value.href.match(/family/)) {
                     connection.query(`INSERT INTO new_goods (date, name, href, img, title, price) VALUES
             ('${date}','FamilyMart', '${value.href}', '${value.img}', '${value.title}', '${value.price}')`, (err) => {
+                        if (err)
+                            console.log('error connecting:' + err.stack);
+                    });
+                }
+                else if (value.href.match(/sej/)) {
+                    connection.query(`INSERT INTO new_goods (date, name, href, img, title, price, release_date) VALUES
+            ('${date}','SEVEN-ELEVEN', '${value.href}', '${value.img}', '${value.title}', '${value.price}', '${value.release_date}')`, (err) => {
                         if (err)
                             console.log('error connecting:' + err.stack);
                     });

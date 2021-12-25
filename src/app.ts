@@ -1,3 +1,4 @@
+//@ts-ignore
 import chromium from 'chrome-aws-lambda'
 import mysql from 'mysql'
 
@@ -11,6 +12,11 @@ const convenience_store_info = [
     name: 'FamilyMart',
     url: 'https://www.family.co.jp/goods/newgoods.html',
     target: '.ly-mod-layout-4clm > .ly-mod-layout-clm',
+  },
+  {
+    name: 'SEVEN-ELEVEN',
+    url: 'https://www.sej.co.jp/products/a/thisweek/area/kanto/1/l100/',
+    target: '.flex_wrap > .list_inner',
   },
 ]
 type list = {
@@ -37,6 +43,15 @@ module.exports.handler = async (event: any, context: any) => {
         const page = await browser.newPage()
         const res = await page.goto(information.url)
         if (res.status() !== 200) return `${res.status()} ERROR`
+        if (information.name === 'SEVEN-ELEVEN') {
+          await page.evaluate(() => {
+            ;(document.scrollingElement as HTMLElement).scrollTo({
+              top: document.body.scrollHeight,
+              behavior: 'smooth',
+            })
+          })
+          await page.waitFor(5000)
+        }
         if (information.name === 'LAWSON') await page.waitForNavigation()
         const lists: list[] = await page.$$eval(
           information.target,
@@ -76,6 +91,31 @@ module.exports.handler = async (event: any, context: any) => {
                     .replace(/\t/g, ''),
                 }
                 listBox.push(list)
+              } else if (document.title.match(/セブン‐イレブン/)) {
+                let releaseDate = data.querySelector('.item_launch > p')
+                  ?.textContent as string
+                releaseDate = releaseDate.substring(
+                  0,
+                  releaseDate.indexOf('（')
+                )
+                ;(releaseDate = releaseDate
+                  .replace(/年/g, '-')
+                  .replace(/月/g, '-')
+                  .replace(/日/g, '-')),
+                  (list = {
+                    href: data.querySelector('a')?.href as string,
+                    img: data.querySelector('img')?.src as string,
+                    title: (
+                      data.querySelector('.item_ttl a')?.textContent as string
+                    ).trim(),
+                    price: (
+                      data.querySelector('.item_price p')?.textContent as string
+                    )
+                      .replace(/\n/g, '')
+                      .replace(/\t/g, ''),
+                    release_date: releaseDate,
+                  })
+                lists.push(list)
               }
             })
             return listBox
@@ -123,6 +163,14 @@ module.exports.handler = async (event: any, context: any) => {
           connection.query(
             `INSERT INTO new_goods (date, name, href, img, title, price) VALUES
             ('${date}','FamilyMart', '${value.href}', '${value.img}', '${value.title}', '${value.price}')`,
+            (err) => {
+              if (err) console.log('error connecting:' + err.stack)
+            }
+          )
+        } else if (value.href.match(/sej/)) {
+          connection.query(
+            `INSERT INTO new_goods (date, name, href, img, title, price, release_date) VALUES
+            ('${date}','SEVEN-ELEVEN', '${value.href}', '${value.img}', '${value.title}', '${value.price}', '${value.release_date}')`,
             (err) => {
               if (err) console.log('error connecting:' + err.stack)
             }
