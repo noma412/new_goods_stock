@@ -68,7 +68,7 @@ module.exports.handler = async (event, context) => {
             const fileName = nowStr.replace(/[\-:]/g, '_').replace(/\s/g, '__');
             const s3Param = {
                 //@ts-ignore
-                Bucket: 'https://new-goods-stock-prod-serverlessdeploymentbucket-f7jmyr8pmntf.s3.ap-northeast-1.amazonaws.com/picture/',
+                Bucket: 'my-puppetter-screenshot',
                 Key: '',
                 Body: '',
             };

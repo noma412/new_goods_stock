@@ -79,8 +79,7 @@ module.exports.handler = async (event: any, context: any) => {
           Body: string
         } = {
           //@ts-ignore
-          Bucket:
-            'https://new-goods-stock-prod-serverlessdeploymentbucket-f7jmyr8pmntf.s3.ap-northeast-1.amazonaws.com/picture/',
+          Bucket: 'my-puppetter-screenshot',
           Key: '',
           Body: '',
         }
