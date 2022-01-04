@@ -5,6 +5,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 //@ts-ignore
 const chrome_aws_lambda_1 = __importDefault(require("chrome-aws-lambda"));
+//@ts-ignore
+const aws_sdk_1 = __importDefault(require("aws-sdk"));
 const mysql_1 = __importDefault(require("mysql"));
 const convenience_store_info = [
     {
@@ -35,8 +37,6 @@ module.exports.handler = async (event, context) => {
         promiseList.push((async () => {
             const page = await browser.newPage();
             const res = await page.goto(information.url);
-            if (res.status() !== 200)
-                return `${res.status()} ERROR`;
             if (information.name === 'SEVEN-ELEVEN') {
                 await page.evaluate(() => {
                     ;
@@ -49,6 +49,32 @@ module.exports.handler = async (event, context) => {
             }
             if (information.name === 'LAWSON')
                 await page.waitForNavigation();
+            const jpgBuf = await page.screenshot({ fullPage: true, type: 'jpeg' });
+            const s3 = new aws_sdk_1.default.S3();
+            const now = new Date();
+            now.setHours(now.getHours() + 9);
+            const nowStr = '' +
+                now.getFullYear() +
+                '-' +
+                (now.getMonth() + 1 + '').padStart(2, '0') +
+                '-' +
+                (now.getDate() + '').padStart(2, '0') +
+                ' ' +
+                (now.getHours() + '').padStart(2, '0') +
+                ':' +
+                (now.getMinutes() + '').padStart(2, '0') +
+                ':' +
+                (now.getSeconds() + '').padStart(2, '0');
+            const fileName = nowStr.replace(/[\-:]/g, '_').replace(/\s/g, '__');
+            const s3Param = {
+                //@ts-ignore
+                Bucket: 'https://new-goods-stock-prod-serverlessdeploymentbucket-f7jmyr8pmntf.s3.ap-northeast-1.amazonaws.com/picture/',
+                Key: '',
+                Body: '',
+            };
+            s3Param.Key = fileName + '.jpg';
+            s3Param.Body = jpgBuf;
+            await s3.putObject(s3Param).promise();
             const lists = await page.$$eval(information.target, (datas) => {
                 const listBox = [];
                 datas.forEach((data) => {
