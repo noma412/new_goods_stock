@@ -39,6 +39,7 @@ module.exports.handler = async (event: any, context: any) => {
     headless: chromium.headless,
   })
   const promiseList: any[] = []
+  //情報取得
   convenience_store_info.forEach((information) => {
     promiseList.push(
       (async () => {
@@ -161,7 +162,7 @@ module.exports.handler = async (event: any, context: any) => {
       })().catch((e) => console.error(e))
     )
   })
-
+  //データベースに取得した情報を保管
   await Promise.all(promiseList).then((promise) => {
     const localFlg: boolean = process.env.NODE_ENV === 'local' ? true : false
     const connection = mysql.createConnection({
